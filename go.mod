@@ -1,3 +1,5 @@
-module gostack
+module github.com/rebay1982/gostack
 
 go 1.17
+
+require github.com/lib/pq v1.10.4 // indirect
