@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/rebay1982/gostack/handler"
 	"log"
 	"net/http"
 )
@@ -38,7 +39,8 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", home)     // Fix path pattern
 	mux.HandleFunc("/foo/", foo)  // Subtree pattern
-	mux.HandleFunc("/post", post) // Subtree pattern.
+	mux.HandleFunc("/post", post) // Fixed path pattern.
+	mux.HandleFunc("/users", handler.Users)
 
 	log.Println("Starting server on :4000")
 	err := http.ListenAndServe(":4000", mux)
