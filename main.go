@@ -42,7 +42,7 @@ func main() {
 	mux.HandleFunc("/post", post) // Fixed path pattern.
 	mux.HandleFunc("/users", handler.Users)
 
-	log.Println("Starting server on :4000")
-	err := http.ListenAndServe(":4000", mux)
+	log.Println("Starting server on :8080")
+	err := http.ListenAndServe(":8080", mux)
 	log.Fatal(err)
 }

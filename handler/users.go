@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"strconv"
 
+	_ "github.com/lib/pq"
+	"github.com/rebay1982/gostack/db"
 	"github.com/rebay1982/gostack/models"
 )
 
@@ -26,7 +28,7 @@ func Users(w http.ResponseWriter, r *http.Request) {
 	} else {
 		w.Header().Set("Allow", http.MethodGet)
 		w.Header().Add("Allow", http.MethodPost)
-		http.Error(w, "Method Not Allowed", 405)
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 
 		return
 	}
@@ -62,6 +64,20 @@ func userGet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	output := fmt.Sprintf("userGet: %d", id)
-	w.Write([]byte(output))
+	userDb, err := db.GetUserById(id)
+
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Unable to read from DB: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	// If no error, make sure we got a result.
+	if userDb == nil {
+		http.Error(w, fmt.Sprintf("No user with id [%d]", id), http.StatusNotFound)
+		return
+
+	} else {
+		output := fmt.Sprintf("userGet: %v", *userDb)
+		w.Write([]byte(output))
+	}
 }

@@ -8,6 +8,6 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o build/gostack git
 FROM alpine
 RUN apk add --no-cache ca-certificates && update-ca-certificates
 COPY --from=builder /go/src/github.com/rebay1982/gostack/build/gostack /usr/bin/gostack
-EXPOSE 4000 4000
+EXPOSE 8080 8080
 ENTRYPOINT ["/usr/bin/gostack"]
 
