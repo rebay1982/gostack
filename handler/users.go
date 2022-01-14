@@ -64,20 +64,27 @@ func userGet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Should be in service layer
 	userDb, err := db.GetUserById(id)
 
+	// Should be in service layer
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Unable to read from DB: %v", err), http.StatusInternalServerError)
 		return
 	}
 
-	// If no error, make sure we got a result.
+	// Service layer should do the conversion and send it to handler in JSON format.
+	// If no error, make sure we got a result
 	if userDb == nil {
 		http.Error(w, fmt.Sprintf("No user with id [%d]", id), http.StatusNotFound)
 		return
 
 	} else {
-		output := fmt.Sprintf("userGet: %v", *userDb)
-		w.Write([]byte(output))
+
+		// In service layer.
+		user := userDb.ToJson()
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(user)
 	}
 }

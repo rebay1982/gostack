@@ -23,3 +23,23 @@ type User struct {
 type UserList struct {
 	Users []User `json:"users"`
 }
+
+// ToJson Takes a UserDb and converts it to a User
+func (u *UserDb) ToJson() User {
+	user := User{}
+	user.ID = u.ID
+	user.FirstName = u.FirstName
+	user.LastName = u.LastName
+
+	return user
+}
+
+// ToDb Takes a User and converts it to a UserDb
+func (u *User) ToDb() UserDb {
+	userDb := UserDb{}
+	userDb.ID = u.ID
+	userDb.FirstName = u.FirstName
+	userDb.LastName = u.LastName
+
+	return userDb
+}
