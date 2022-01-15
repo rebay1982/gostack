@@ -6,9 +6,8 @@ import (
 	"net/http"
 	"strconv"
 
-	_ "github.com/lib/pq"
-	"github.com/rebay1982/gostack/db"
 	"github.com/rebay1982/gostack/models"
+	"github.com/rebay1982/gostack/server"
 )
 
 // Users Handler for users.
@@ -48,17 +47,13 @@ func userPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userDb := user.ToDb()
-	err = db.InsertUser(&userDb)
-
+	err = server.CreateUser(&user)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("%v", err), http.StatusInternalServerError)
 		return
 	}
 
-	user = userDb.ToJson()
 	json.NewEncoder(w).Encode(user)
-
 }
 
 func userGet(w http.ResponseWriter, r *http.Request) {
@@ -73,27 +68,17 @@ func userGet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Should be in service layer
-	userDb, err := db.GetUserById(id)
-
-	// Should be in service layer
+	user, err := server.GetUserById(id)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("Unable to read from DB: %v", err), http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("%v", err), http.StatusInternalServerError)
 		return
 	}
 
-	// Service layer should do the conversion and send it to handler in JSON format.
-	// If no error, make sure we got a result
-	if userDb == nil {
+	if user == nil {
 		http.Error(w, fmt.Sprintf("No user with id [%d]", id), http.StatusNotFound)
 		return
-
-	} else {
-
-		// In service layer.
-		user := userDb.ToJson()
-
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(user)
 	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(*user)
 }
