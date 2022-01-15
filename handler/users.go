@@ -48,8 +48,17 @@ func userPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	output := fmt.Sprintf("userPost: %v", user)
-	w.Write([]byte(output))
+	userDb := user.ToDb()
+	err = db.InsertUser(&userDb)
+
+	if err != nil {
+		http.Error(w, fmt.Sprintf("%v", err), http.StatusInternalServerError)
+		return
+	}
+
+	user = userDb.ToJson()
+	json.NewEncoder(w).Encode(user)
+
 }
 
 func userGet(w http.ResponseWriter, r *http.Request) {

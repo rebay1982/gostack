@@ -36,7 +36,7 @@ func GetUserById(id int) (*models.UserDb, error) {
 //   to insert the User.
 func InsertUser(user *models.UserDb) error {
 	var id int
-	query := `INSERT INTO users (first_name, last_name) VALUES ($1, $2) RETURNING id`
+	query := `INSERT INTO users (first_name, last_name) VALUES ($1, $2) RETURNING id;`
 
 	db, err := getDb()
 	if err != nil {
@@ -44,6 +44,7 @@ func InsertUser(user *models.UserDb) error {
 	}
 
 	err = db.cnn.QueryRow(query, user.FirstName, user.LastName).Scan(&id)
+
 	if err != nil {
 		return err
 	}
