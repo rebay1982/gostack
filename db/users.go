@@ -52,3 +52,21 @@ func InsertUser(user *models.UserDb) error {
 	user.ID = id
 	return nil
 }
+
+func DeleteUserById(id int) error {
+	query := `DELETE FROM users WHERE id = $1;`
+
+	db, err := getDb()
+	if err != nil {
+		return err
+	}
+
+	_, err = db.cnn.Exec(query, id)
+	switch err {
+	case sql.ErrNoRows:
+		return nil
+
+	default:
+		return err // If no errors were produced, we're returning nil.
+	}
+}

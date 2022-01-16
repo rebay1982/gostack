@@ -19,17 +19,18 @@ func CreateUser(user *models.User) error {
 
 func GetUserById(id int) (*models.User, error) {
 
+	var user *models.User = nil
 	userDb, err := db.GetUserById(id)
 
-	if err != nil {
-
-		return nil, err
+	if userDb != nil {
+		tmp := userDb.ToJson()
+		user = &tmp
 	}
 
-	if userDb == nil {
-		return nil, nil
-	}
+	return user, err
+}
 
-	user := userDb.ToJson()
-	return &user, nil
+func DeleteUserById(id int) error {
+	err := db.DeleteUserById(id)
+	return err
 }
