@@ -26,6 +26,10 @@ func Users(w http.ResponseWriter, r *http.Request) {
 		userDelete(w, r)
 		return
 
+	case http.MethodPut:
+		userPut(w, r)
+		return
+
 	default:
 		w.Header().Set("Allow", http.MethodGet)
 		w.Header().Add("Allow", http.MethodPost)
@@ -67,7 +71,6 @@ func userPost(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&user)
 
 	if err != nil {
-
 		errorMsg := fmt.Sprintf("Cannot parse JSON request body: %v", err)
 		http.Error(w, errorMsg, http.StatusBadRequest)
 		return
@@ -93,6 +96,31 @@ func userDelete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = server.DeleteUserById(id)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("%v", err), http.StatusInternalServerError)
+		return
+	}
+}
+
+func userPut(w http.ResponseWriter, r *http.Request) {
+	idStr := r.URL.Query().Get("id")
+	id, err := strconv.Atoi(idStr)
+
+	// Validate parameter is an int.
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid 'id' Parameter: %s", idStr), http.StatusBadRequest)
+		return
+	}
+
+	var user models.User
+	err = json.NewDecoder(r.Body).Decode(&user)
+	if err != nil {
+		errorMsg := fmt.Sprintf("Cannot parse JSON request body: %v", err)
+		http.Error(w, errorMsg, http.StatusBadRequest)
+		return
+	}
+
+	err = server.UpdateUser(id, &user)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("%v", err), http.StatusInternalServerError)
 		return

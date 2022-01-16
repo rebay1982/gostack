@@ -34,3 +34,15 @@ func DeleteUserById(id int) error {
 	err := db.DeleteUserById(id)
 	return err
 }
+
+func UpdateUser(id int, user *models.User) error {
+
+	userDb := user.ToDb()
+	err := db.UpdateUser(id, userDb)
+	if err != nil {
+		return err
+	}
+
+	user.ID = id
+	return nil
+}
